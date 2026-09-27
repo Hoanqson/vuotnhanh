@@ -15,7 +15,7 @@ import threading
 import time
 from pathlib import Path
 
-# Console Windows mặc định cp1252 không in được tiếng Việt -> ép UTF-8.
+# Console Windows mac dinh cp1252 khong in duoc tieng Viet -> ep UTF-8.
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
@@ -23,6 +23,10 @@ except Exception:
     pass
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from src.utils.ansi import enable_ansi  # noqa: E402
+
+enable_ansi()  # bat VT de cmd.exe hieu ma mau ANSI (logo + clear-screen)
 
 import yaml  # noqa: E402
 

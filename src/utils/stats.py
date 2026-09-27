@@ -78,8 +78,9 @@ def render_dashboard(workers: int, pool_size: int, stats: dict) -> str:
 
 def render_live(workers: int, pool_size: int, stats: dict,
                 sys: dict | None = None, in_use: int = 0) -> str:
-    """Dashboard live: logo cố định + SYS + POOL + RUN. Không log lỗi."""
-    from src.utils.banner import LOGO, RESET, SUB  # local import, tránh cycle
+    """Dashboard live: logo co dinh + SYS + POOL + RUN. Khong log loi."""
+    from src.utils.ansi import ansi_ok, strip_ansi  # local import, tranh cycle
+    from src.utils.banner import LOGO, RESET, SUB
     s = stats
     sys = sys or {}
     alive = s.get("alive", 0)
@@ -88,19 +89,32 @@ def render_live(workers: int, pool_size: int, stats: dict,
     req = s.get("requests", 0)
     ok = s.get("success", 0)
     ok_rate = (100.0 * ok / req) if req else 0.0
-    lines = [
-        "\033[2J\033[H",  # xóa màn hình, logo luôn ở đỉnh, không trôi
-        LOGO,
-        SUB,
-        "----------------------------------------",
-        (f"SYS  cpu {sys.get('cpu', 0):>5}% | "
-         f"ram {sys.get('ram_used', 0)}/{sys.get('ram_total', 0)}MB "
-         f"({sys.get('ram_pct', 0)}%) | cores {sys.get('cores', '?')}"),
-        (f"POOL con {pool_size} | alive {alive}/{checked} ({rate:.0f}%) | "
+    if ansi_ok():
+        lines = [
+            "\033[2J\033[H",  # xoa man hinh, logo luon o dinh, khong troi
+            LOGO,
+            SUB,
+        ]
+    else:
+        # Console cu khong hieu ANSI: in text tron, khong clear-screen.
+        lines = [
+            "=" * 40,
+            strip_ansi(LOGO),
+            strip_ansi(SUB),
+        ]
+    lines += [
+        "---------------------------------------------------------------",
+        (f"SYS  {f'cpu {sys.get('cpu', 0):>5}%':<12} | "
+         f"{f'ram {sys.get('ram_used', 0)}/{sys.get('ram_total', 0)}MB ({sys.get('ram_pct', 0)}%)':<26} | "
+         f"cores {sys.get('cores', '?')}"),
+        (f"POOL {f'con {pool_size}':<12} | "
+         f"{f'alive {alive}/{checked} ({rate:.0f}%)':<26} | "
          f"in-use {in_use}"),
-        (f"RUN  threads {workers} | ok {ok} / fail {s.get('failed', 0)} "
-         f"({ok_rate:.0f}%) | avg {s.get('avg_latency', 0):.1f}s"),
-        "----------------------------------------",
+        (f"RUN  {f'threads {workers}':<12} | "
+         f"{f'ok {ok} / fail {s.get('failed', 0)} ({ok_rate:.0f}%)':<26} | "
+         f"avg {s.get('avg_latency', 0):.1f}s"),
+        "---------------------------------------------------------------",
         f"{RESET}Chi tiet loi xem logs/app.log (console chi hien dashboard)",
     ]
-    return "\n".join(lines)
+    out = "\n".join(lines)
+    return out if ansi_ok() else strip_ansi(out)
