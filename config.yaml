@@ -1,0 +1,65 @@
+# Toàn bộ thông số vận hành. Không hard-code trong source.
+# URL website của bạn điền ở mục `site`.
+
+workers: 10
+checker_workers: 100
+crawl_workers: 10
+
+# Tự tune concurrency theo RAM là chính, CPU chỉ làm sàn (stdlib only).
+# Bật: ghi đè 3 số trên lúc chạy. Tắt (--no-auto-tune): dùng số tay.
+auto_tune: true
+target_ram_percent: 80   # % RAM tổng muốn dùng (10-95)
+max_workers: 100         # trần an toàn, tránh quá tải site của bạn
+max_checker_workers: 1000
+max_crawl_workers: 32
+
+request_timeout: 12
+proxy_check_timeout: 8
+
+max_retries: 2
+max_proxy_failures: 3   # proxy lỗi bấy nhiêu lần thì loại khỏi pool
+
+delay_min: 1
+delay_max: 2
+
+# Nghỉ dài theo code vuotnhanh gốc: đủ N vòng thì nghỉ random X-Y giây.
+long_rest_every: 10
+long_rest_min: 300
+long_rest_max: 600
+
+min_pool_size: 20
+refill_interval: 60     # giây giữa các lần kiểm tra refill
+
+max_requests: 0           # 0 = không giới hạn, chạy đến khi hết proxy thì dừng
+stop_when_exhausted: true  # true = hết proxy (pool cạn + không còn nguồn bổ sung) thì dừng
+dashboard_interval: 5   # giây giữa các lần in bảng monitoring
+
+check_http_url: "http://httpbin.org/ip"
+check_https_url: "https://httpbin.org/ip"
+
+paths:
+  raw: "data/proxylive.txt"
+  healthy: "data/healthy_proxies.txt"
+  dead: "data/dead_proxies.txt"
+  log: "logs/app.log"
+
+# ---- Website: vuotnhanh (link cày nhập lúc chạy bằng --url) ----
+site:
+  target_url: "https://vuotnhanh.com/webngon"
+  csrf_url: "https://vuotnhanh.com/webngon"
+  action_url: "https://vuotnhanh.com/go/sf"
+  method: "POST"
+  csrf_cookie: ""
+  csrf_header: "X-CSRF-TOKEN"
+  alias_from_url: true      # payload alias = đoạn cuối của target_url
+  send_referer: true
+  origin: "https://vuotnhanh.com"
+  payload: {}
+  headers:
+    Content-Type: "application/x-www-form-urlencoded"
+  success_json_field: "status"
+  success_json_value: "success"
+  follow_redirect: true
+  redirect_field: "url_redirect"
+  success_marker: ""
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
