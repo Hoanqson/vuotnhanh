@@ -24,7 +24,8 @@ from src.proxy.crawler import ProxyCrawler
 from src.proxy.pipeline import CrawlCheckPipeline
 from src.proxy.pool import ProxyPool
 from src.runner.site_client import InvalidResponseError, SiteClient
-from src.utils.stats import Stats, render_dashboard
+from src.utils.stats import Stats, render_dashboard, render_live
+from src.utils.sysinfo import get_sys_snapshot
 
 log = logging.getLogger(__name__)
 
@@ -157,8 +158,9 @@ class Runner:
                                         name="refill")
             refill_t.start()
         log.info("start %d workers (max_requests=%s)", workers, max_requests or "∞")
-        print(render_dashboard(workers, self.pool.size(),
-                               self.stats.snapshot()), flush=True)
+        print(render_live(workers, self.pool.size(), self.stats.snapshot(),
+                          get_sys_snapshot(), self.pool.in_use_count()),
+              flush=True)
 
         try:
             with ThreadPoolExecutor(max_workers=workers,
@@ -167,7 +169,9 @@ class Runner:
                 while True:
                     time.sleep(dashboard_every)
                     snap = self.stats.snapshot()
-                    print(render_dashboard(workers, self.pool.size(), snap),
+                    print(render_live(workers, self.pool.size(), snap,
+                                      get_sys_snapshot(),
+                                      self.pool.in_use_count()),
                           flush=True)
                     if max_requests and snap["requests"] >= max_requests:
                         break
@@ -178,6 +182,8 @@ class Runner:
         finally:
             self.stop_event.set()
             snap = self.stats.snapshot()
-            print(render_dashboard(workers, self.pool.size(), snap), flush=True)
+            print(render_live(workers, self.pool.size(), snap,
+                              get_sys_snapshot(), self.pool.in_use_count()),
+                  flush=True)
             log.info("runner dừng. success=%d failed=%d",
                      snap["success"], snap["failed"])

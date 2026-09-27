@@ -74,3 +74,33 @@ def render_dashboard(workers: int, pool_size: int, stats: dict) -> str:
         f"Avg latency   : {s['avg_latency']:.2f}s\n"
         "========================================"
     )
+
+
+def render_live(workers: int, pool_size: int, stats: dict,
+                sys: dict | None = None, in_use: int = 0) -> str:
+    """Dashboard live: logo cố định + SYS + POOL + RUN. Không log lỗi."""
+    from src.utils.banner import LOGO, RESET, SUB  # local import, tránh cycle
+    s = stats
+    sys = sys or {}
+    alive = s.get("alive", 0)
+    checked = s.get("checked", 0)
+    rate = (100.0 * alive / checked) if checked else 0.0
+    req = s.get("requests", 0)
+    ok = s.get("success", 0)
+    ok_rate = (100.0 * ok / req) if req else 0.0
+    lines = [
+        "\033[2J\033[H",  # xóa màn hình, logo luôn ở đỉnh, không trôi
+        LOGO,
+        SUB,
+        "----------------------------------------",
+        (f"SYS  cpu {sys.get('cpu', 0):>5}% | "
+         f"ram {sys.get('ram_used', 0)}/{sys.get('ram_total', 0)}MB "
+         f"({sys.get('ram_pct', 0)}%) | cores {sys.get('cores', '?')}"),
+        (f"POOL con {pool_size} | alive {alive}/{checked} ({rate:.0f}%) | "
+         f"in-use {in_use}"),
+        (f"RUN  threads {workers} | ok {ok} / fail {s.get('failed', 0)} "
+         f"({ok_rate:.0f}%) | avg {s.get('avg_latency', 0):.1f}s"),
+        "----------------------------------------",
+        f"{RESET}Chi tiet loi xem logs/app.log (console chi hien dashboard)",
+    ]
+    return "\n".join(lines)
