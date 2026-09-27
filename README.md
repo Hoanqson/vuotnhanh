@@ -24,15 +24,15 @@ pip install -r requirements.txt
 ```
 python main.py --crawl
 ```
-# crawl -> data/proxylive.txt
+crawl -> data/proxylive.txt
 ```
 python main.py --check   
 ```    
-# check proxylive -> healthy/dead
+check proxylive -> healthy/dead
 ```
 python main.py --run
 ```
-# pool + workers (tự crawl+check nếu healthy trống)
+pool + workers (tự crawl+check nếu healthy trống)
 ```
 python main.py --crawl --check --run
 ```
@@ -40,7 +40,7 @@ python main.py --crawl --check --run
 ```
 python main.py --crawl --check
 ```
-# chỉ crawl+check, chưa run
+chỉ crawl+check, chưa run
 
 ```
 python main.py --crawl --check --run --url https://vuotnhanh.com/abcd
