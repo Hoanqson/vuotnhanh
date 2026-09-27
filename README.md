@@ -13,17 +13,31 @@ Chỉ dùng cho website bạn sở hữu; không bypass CAPTCHA/auth/rate-limit.
 ## Cài đặt & chạy
 
 
-```cd vuotnhanh```
+```
+cd vuotnhanh
+```
 ```
 pip install -r requirements.txt
 ```
 
-```python main.py --crawl ```             # crawl -> data/proxylive.txt
-```python main.py --check   ```          # check proxylive -> healthy/dead
-```python main.py --run```                # pool + workers (tự crawl+check nếu healthy trống)
-```python main.py --crawl --check --run```
-```python main.py --crawl --check```       # chỉ crawl+check, chưa run
-```python main.py --crawl --check --run --url https://vuotnhanh.com/link-cua-ban```
+```
+python main.py --crawl
+```             # crawl -> data/proxylive.txt
+```
+python main.py --check   
+```          # check proxylive -> healthy/dead
+```
+python main.py --run
+```                # pool + workers (tự crawl+check nếu healthy trống)
+```
+python main.py --crawl --check --run
+```
+```
+python main.py --crawl --check
+```       # chỉ crawl+check, chưa run
+```
+python main.py --crawl --check --run --url https://vuotnhanh.com/abcd
+```
 
 
 ## Cấu hình (`config.yaml`)
