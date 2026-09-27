@@ -14,7 +14,9 @@ Chỉ dùng cho website bạn sở hữu; không bypass CAPTCHA/auth/rate-limit.
 
 
 ```cd vuotnhanh```
-`pip install -r requirements.txt`
+```
+pip install -r requirements.txt
+```
 
 ```python main.py --crawl ```             # crawl -> data/proxylive.txt
 ```python main.py --check   ```          # check proxylive -> healthy/dead
